@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a style="margin: 0 10px; padding-right:50px;" class="navbar-brand" href="/">GameHouse</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </nav>
     <form id="login_form" style="padding-top: 100px; padding-left: 100px">
       <div class="form-group">
         <label for="exampleInputEmail1">Email address</label>
@@ -17,12 +23,6 @@
       <div class="form-group">
         <label for="exampleInputPassword1">Password</label>
         <input type="password" style="width:300px;" class="form-control mx-sm-3" id="exampleInputPassword1" placeholder="Password" aria-describedby="passwordHelpInline">
-      </div>
-      <div class="form-check">
-        <label class="form-check-label">
-          <input type="checkbox" class="form-check-input">
-          Check me out
-        </label>
       </div>
       <button type="submit" class="btn btn-primary">Login</button>
     </form>

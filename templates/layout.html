@@ -26,26 +26,29 @@
               <a class="dropdown-item" href="#">Action</a>
               <a class="dropdown-item" href="#">Strategy</a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">All Games</a>
+              <a class="dropdown-item" href="/store">All Games</a>
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Library</a>
+            <a class="nav-link" href="/library">Library</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Blog</a>
+            <a class="nav-link" href="/blog">Blog</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Profile</a>
+            <a class="nav-link" href="/profile">Profile</a>
           </li>
         </ul>
         <form style="margin: 0 35px" class="form-inline my-2 my-lg-0">
           <input class="form-control mr-sm-2" type="search" placeholder="type something" aria-label="Search">
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
-
-        <button href="#" style="margin: 0 5px" type="submit" class="btn btn-outline-primary" role="button" >Login</button>
-        <button type="button" class="btn btn-success" >Sign Up</button>
+        <form style="margin: 0 10px" action="/login">
+          <input type="submit" value="Login" class="btn btn-outline-primary" />
+        </form>
+        <form action="/submit">
+          <input type="submit" value="Submit" class="btn btn-outline-success" />
+        </form>
       </div>
     </nav>
     {% block content %}{% endblock %}
