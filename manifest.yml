@@ -1,6 +1,6 @@
 applications:
 - services:
-  - ElephantSQL -r3
+  - ElephantSQL-r3
   disk_quota: 1024M
   host: itucsdb1737
   name: itucsdb1737
