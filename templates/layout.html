@@ -43,16 +43,22 @@
           <input class="form-control mr-sm-2" type="search" placeholder="type something" aria-label="Search">
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
-        <form style="margin: 0 10px" action="/login">
-          <input type="submit" value="Login" class="btn btn-outline-primary" />
-        </form>
-        <form action="/submit">
-          <input type="submit" value="Submit" class="btn btn-outline-success" />
-        </form>
+        {% if session.logged_in %}
+          <form style="margin: 0 10px" action="/logout">
+            <input type="submit" value="Log out" class="btn btn-outline-primary" />
+          </form>
+        {% else %}
+          <form style="margin: 0 10px" action="/login">
+            <input type="submit" value="Login" class="btn btn-outline-primary" />
+          </form>
+          <form action="/signup">
+            <input type="submit" value="Sign Up" class="btn btn-outline-success" />
+          </form>
+        {% endif %}
       </div>
     </nav>
     {% block content %}{% endblock %}
-    <footer>
+    <footer style="position:fixed; bottom:10px; right:0px; height:20px; width:250px">
         &copy; 2017, GameHouse
     </footer>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

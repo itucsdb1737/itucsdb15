@@ -8,24 +8,32 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a style="margin: 0 10px; padding-right:50px;" class="navbar-brand" href="/">GameHouse</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-    </nav>
-    <form id="login_form" style="padding-top: 100px; padding-left: 100px">
-      <div class="form-group">
-        <label for="exampleInputEmail1">Email address</label>
-        <input type="email" style="width:300px;" class="form-control mx-sm-3" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-      </div>
-      <div class="form-group">
-        <label for="exampleInputPassword1">Password</label>
-        <input type="password" style="width:300px;" class="form-control mx-sm-3" id="exampleInputPassword1" placeholder="Password" aria-describedby="passwordHelpInline">
-      </div>
-      <button type="submit" class="btn btn-primary">Login</button>
-    </form>
+  </nav>
+  <div style="padding:30px">
+      <h2>Login</h2>
+      <form style="padding-bottom: 10px" method="POST" action="/login">
+          <div class="form-group col-md-3">
+              <label for="exampleInputUsername1">Username</label>
+              <input type="text" class="form-control" id="InputUsername1" name="username" placeholder="Username" value="{{ request.form.username }}">
+          </div>
+          <div class="form-group col-md-3">
+              <label for="exampleInputPassword1">Password</label>
+              <input type="password" class="form-control" id="InputPassword1" name="password" placeholder="Password" value="{{ request.form.password }}">
+          </div>
+          <div class="display:inline-block">
+              <input style="margin-left:15px" type="submit" class="btn btn-primary" value="Login">
+              <a class="btn btn-outline-primary" href="/signup">Sign up</a>
+          </div>
+      </form>
+  </div>
+    {% if message %}
+        <div style="width:25%;margin:35px" class="alert alert-warning" role="alert">{{ message }}</div>
+    {% endif %}
 
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -33,3 +41,4 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 </body>
 </html>
+
