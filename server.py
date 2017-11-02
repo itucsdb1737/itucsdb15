@@ -15,8 +15,6 @@ from flask import flash, request, session
 from flask_login import LoginManager, UserMixin
 
 
-
-
 app = Flask(__name__)
 app.secret_key = "secretkey"
 
