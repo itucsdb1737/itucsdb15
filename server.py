@@ -3,16 +3,16 @@ import json
 import re
 import psycopg2 as dbapi2
 
-from flask_wtf import Form
+
 from flask import json
 from functools import wraps
-from wtforms import StringField, PasswordField, SubmitField, validators, BooleanField
+from wtforms import Form, StringField, PasswordField, SubmitField, validators, BooleanField
 from flask import Flask
 from flask import render_template
 from flask import redirect
 from flask.helpers import url_for
 from flask import flash, request, session
-from flask_login import LoginManager, UserMixin
+
 
 
 app = Flask(__name__)
@@ -40,7 +40,7 @@ class SignupForm(Form):
 
 
 
-class User(UserMixin):
+class User():
     def __init__(self, username, password, email):
         self.username = username
         self.password = password
@@ -54,26 +54,6 @@ class User(UserMixin):
                 cursor.execute(query, (self.username,))
                 user = cursor.fetchone()
                 return user
-
-
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    #user = User.query.filter_by(id=user_id).first()
-    with dbapi2.connect(app.config['dsn']) as connection:
-        cursor = connection.cursor()
-        query = """SELECT * FROM USERS WHERE (ID= (%s))"""
-        cursor.execute(query, (user_id,))
-        user = cursor.fetchone()[2]
-        connection.commit()
-    if user:
-        return user
-    return None
 
 
 def login_required(f):
