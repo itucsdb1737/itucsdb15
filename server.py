@@ -1,29 +1,24 @@
-import datetime
 import os
 import json
 import re
 import psycopg2 as dbapi2
 
-import sqlalchemy
 from wtforms import Form
 from flask import json
 from functools import wraps
 from wtforms import StringField, PasswordField, SubmitField, validators, BooleanField
-from wtforms.validators import DataRequired
 from flask import Flask
 from flask import render_template
 from flask import redirect
 from flask.helpers import url_for
-from flask import flash, request, session, abort
-from flask_login import LoginManager, UserMixin,login_user, logout_user
-from flask_sqlalchemy import SQLAlchemy
-from passlib.hash import sha256_crypt
+from flask import flash, request, session
+from flask_login import LoginManager, UserMixin
+
 
 
 app = Flask(__name__)
 app.secret_key = "secretkey"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Batuhan190393@localhost/postgres'
-db = SQLAlchemy(app)
+
 
 def get_elephantsql_dsn(vcap_services):
     parsed = json.loads(vcap_services)
@@ -36,42 +31,31 @@ def get_elephantsql_dsn(vcap_services):
 
 
 class SignupForm(Form):
-    username = StringField('Username', [validators.Length(min=4, max=20), validators.DataRequired()])
+    username = StringField('Username', [validators.Length(min=4, max=20)])
     password = PasswordField('Password', [validators.DataRequired(),
                                           validators.EqualTo('confirm', message="Passwords must match.")])
-    email = StringField('E-mail', [validators.Length(min=6, max=20), validators.DataRequired()])
-    confirm = PasswordField('Repeat Password', [validators.DataRequired()] )
+    email = StringField('E-mail', [validators.Length(min=4, max=20)])
+    confirm = PasswordField('Repeat Password')
     accept_tos = BooleanField('I accept the Terms of Service and the Privacy Notice.', [validators.DataRequired()])
     submit = SubmitField('Sign Up')
 
 
 
-class User(db.Model):
-    __tablename__ = "users"
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column('username',db.String(30), unique=True, nullable=False)
-    email = db.Column('email', db.String(30), nullable=False)
-    password = db.Column('password', db.String(100), nullable=False)
-
+class User(UserMixin):
     def __init__(self, username, password, email):
         self.username = username
         self.password = password
-        self.email = email
-
-    def is_authenticated(self):
-        return True
-
-    def is_active(self):
-        return True
-
-    def is_anonymous(self):
-        return False
+        self.email  = email
 
     def get_id(self):
-        return self.id
+        def get_id(self):
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = "SELECT ID FROM USERS WHERE (USERNAME = %s)"
+                cursor.execute(query, (self.username,))
+                user = cursor.fetchone()
+                return user
 
-    def __repr__(self):
-        return '<User %r>' % self.user
 
 
 login_manager = LoginManager()
@@ -81,7 +65,13 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    user = User.query.filter_by(id=user_id).first()
+    #user = User.query.filter_by(id=user_id).first()
+    with dbapi2.connect(app.config['dsn']) as connection:
+        cursor = connection.cursor()
+        query = """SELECT * FROM USERS WHERE (ID= (%s))"""
+        cursor.execute(query, (user_id,))
+        user = cursor.fetchone()[2]
+        connection.commit()
     if user:
         return user
     return None
@@ -99,8 +89,22 @@ def login_required(f):
 
 @app.route('/initdb_1737')
 def initialize_database():
-    db.drop_all()
-    db.create_all()
+    with dbapi2.connect(app.config['dsn']) as connection:
+        cursor = connection.cursor()
+
+        query = """DROP TABLE IF EXISTS USERS"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE USERS(
+                 ID SERIAL NOT NULL,
+                 USERNAME VARCHAR(30),
+                 PASSWORD VARCHAR(30),
+                 EMAIL VARCHAR(30),
+                 PRIMARY KEY(ID)
+                 )"""
+        cursor.execute(query)
+
+        connection.commit()
     return redirect(url_for('home_page'))
 
 
@@ -115,25 +119,39 @@ def login():
     message = None
     if request.method == 'GET':
         return render_template('login.html')
-    elif request.method == 'POST':
-        user = User.query.filter_by(username=request.form['username']).first()
-        if user:
-            if user.password == request.form['password']:
-                login_user(user)
-                session['logged_in'] = True
-                session['username'] = user.username
-                flash('You were just logged in as ' + user.username)
-                next_page = request.args.get('next', url_for('home_page'))
-                return redirect(next_page)
-            else:
-                message='Wrong password !'
+
+    if request.method == 'POST':
+        attempted_username = request.form['username']
+        attempted_password = request.form['password']
+        with dbapi2.connect(app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT ID FROM USERS WHERE (USERNAME = %s)"""
+            cursor.execute(query, (attempted_username,))
+            user = cursor.fetchone()
+            if user is None:
+                message = 'Invalid credentials!'
                 return render_template('login.html', message=message)
-        else:
-            message = 'Wrong username !'
-            return render_template('login.html', message=message)
+            else:
+                with dbapi2.connect(app.config['dsn']) as connection:
+                    cursor = connection.cursor()
+                    query = """SELECT PASSWORD FROM USERS WHERE (USERNAME=%s)"""
+                    cursor.execute(query, (attempted_username,))
+                    result = cursor.fetchone()[0]
+                    connection.commit()
+                    password = result
+                if password == attempted_password:
+                    session['logged_in'] = True
+                    session['username'] = attempted_username
+                    flash('You were just logged in as ' + attempted_username)
+                    next_page = request.args.get('next', url_for('home_page'))
+                    return redirect(next_page)
+                else:
+                    message = 'Invalid credentials !'
+                    return render_template('login.html', message=message)
     else:
         message = 'Invalid credentials !'
         return render_template('login.html', message=message)
+
 
 
 @app.route('/signup', methods=['GET','POST'])
@@ -144,17 +162,29 @@ def register():
             username = form.username.data
             email = form.email.data
             password = str(form.password.data)
-            if User.query.filter_by(username=username).all():
-                flash('The username is already taken, please choose another')
-                return render_template('signup.html', form=form)
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """SELECT COUNT(*) FROM USERS WHERE (USERNAME=(%s))"""
+                cursor.execute(query, (username,))
+                num = cursor.fetchone()[0]
+                connection.commit()
+                num = int(num)
+            if num > 0:
+                message = 'The username is already taken, please choose another'
+                return render_template('signup.html', form=form, message=message )
             else:
                 new_user = User(str(form.username.data), str(form.password.data), str(form.email.data))
-                db.session.add(new_user)
-                db.session.commit()
+                with dbapi2.connect(app.config['dsn']) as connection:
+                    cursor = connection.cursor()
+                    query = """INSERT INTO USERS (USERNAME,PASSWORD, EMAIL) VALUES (%s, %s, %s)"""
+                    cursor.execute(query, (new_user.username, new_user.password, new_user.email))
+                    connection.commit()
+                    cursor.close()
                 flash("Thanks for joining our site")
                 return redirect(url_for('login'))
         else:
             return render_template('signup.html', form=form)
+
     except Exception as e:
         return (str(e))
 
@@ -173,6 +203,7 @@ def store_page():
 
 
 @app.route('/library')
+@login_required
 def library_page():
     return render_template('library.html')
 
@@ -182,6 +213,7 @@ def blog_page():
 
 
 @app.route('/profile')
+@login_required
 def profile_page():
     return render_template('profile.html')
 
