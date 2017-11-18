@@ -2,7 +2,8 @@
 {% block title %}Blog{% endblock %}
 {% block content %}
 
-<h2>Welcome to GameHouse, </h2>
+<h2>Welcome to GameHouse </h2>
+
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <ul class=flashes>
@@ -12,8 +13,6 @@
     </ul>
   {% endif %}
 {% endwith %}
-
-
 
 {% endblock %}
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
