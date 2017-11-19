@@ -2,5 +2,7 @@
 {% block title %}Library{% endblock %}
 {% block content %}
 
-<h2>Library Page</h2>
+    {% if session.logged_in %}
+        <h1>Library of {{username}}</h1>
+    {% endif %}
 {% endblock %}

@@ -2,19 +2,47 @@
 {% block title %}Blog{% endblock %}
 {% block content %}
 
-<h2>Welcome to GameHouse </h2>
 
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class=flashes>
-    {% for message in messages %}
-      <li>{{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
+
+  {% block messages %}
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes list-unstyled" style="padding-left: 15px ;margin-top:10px; font-size:130%">
+        {% for message in messages %}
+          <li class="font-weight-light">{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+  {% endblock %}
+
+      <table style="margin-top:50px" id="act_table" class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Activity</th>
+            <th scope="col">Username</th>
+            <th scope="col">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if activities %}
+            {% for act_id, activity in activities %}
+              <tr>
+                <td>{{activity.status}}</td>
+                <td>@{{activity.activator}}</td>
+                <td>{{activity.date}}</td>
+              </tr>
+            {% endfor %}
+          {% endif %}
+        </tbody>
+      </table>
+
 
 {% endblock %}
+
+
+
+
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>

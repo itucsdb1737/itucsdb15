@@ -6,6 +6,8 @@ import psycopg2 as dbapi2
 
 from flask import json
 from userlist import UserList
+from activity import Activity
+from activitylist import ActivityList
 from flask import current_app as app
 from functools import wraps
 from wtforms import Form, StringField, PasswordField, SubmitField, validators, BooleanField
@@ -15,6 +17,7 @@ from flask import render_template
 from flask import redirect
 from flask.helpers import url_for
 from flask import flash, request, session
+from activitylist import formatDate
 import time
 import datetime
 
@@ -26,13 +29,14 @@ def login_required(f):
         if 'logged_in' in session:
             return f(*args, **kwargs)
         else:
-            flash("You need to login first")
+            flash("You need to login first.")
             return redirect(url_for('site.login'))
     return wrap
 
 @site.route('/')
 def home_page():
-    return render_template('home.html')
+    activities = app.activitylist.get_all_activities()
+    return render_template('home.html', activities=activities)
 
 class SignupForm(Form):
     username = StringField('Username', [validators.Length(min=4, max=20)])
@@ -62,7 +66,7 @@ def login():
             if password == attempted_password:
                 session['logged_in'] = True
                 session['username'] = attempted_username
-                flash('You were just logged in as ' + attempted_username)
+                flash('You were just logged in as ' + attempted_username + ".")
                 next_page = request.args.get('next', url_for('site.home_page'))
                 return redirect(next_page)
             else:
@@ -94,7 +98,8 @@ def register():
             else:
                 new_user = User(str(form.username.data), str(form.password.data), str(form.email.data))
                 app.userlist.add_user(new_user.username,new_user.password,new_user.email)
-                flash("Thanks for joining our site")
+                app.activitylist.add_activity(new_user.username,"New user has been joined", formatDate())
+                flash("Thanks for joining our site.")
                 return redirect(url_for('site.login'))
         else:
             return render_template('signup.html', form=form)
@@ -107,7 +112,7 @@ def register():
 @login_required
 def logout():
     session.clear()
-    flash('You were just logged out')
+    flash('You were just logged out.')
     return redirect(url_for('site.home_page'))
 
 @site.route('/store')
@@ -118,7 +123,7 @@ def store_page():
 @site.route('/library')
 @login_required
 def library_page():
-    return render_template('library.html')
+    return render_template('library.html', username=session['username'])
 
 @site.route('/blog')
 def blog_page():
@@ -128,4 +133,4 @@ def blog_page():
 @site.route('/profile')
 @login_required
 def profile_page():
-    return render_template('profile.html')
+    return render_template('profile.html', username=session['username'])

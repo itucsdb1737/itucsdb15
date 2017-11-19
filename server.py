@@ -7,6 +7,7 @@ import psycopg2 as dbapi2
 from flask import json
 from handlers import site
 from userlist import UserList
+from activitylist import ActivityList
 from user import User
 from functools import wraps
 from wtforms import Form, StringField, PasswordField, SubmitField, validators, BooleanField
@@ -25,6 +26,7 @@ def create_app():
     app.secret_key = "secretkey"
     app.register_blueprint(site)
     app.userlist = UserList()
+    app.activitylist = ActivityList()
     return app
 
 app = create_app()
@@ -46,6 +48,9 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS USERS"""
         cursor.execute(query)
 
+        query = """DROP TABLE IF EXISTS ACTIVITIES"""
+        cursor.execute(query)
+
         query = """CREATE TABLE USERS(
                  ID SERIAL NOT NULL,
                  USERNAME VARCHAR(30),
@@ -54,6 +59,16 @@ def initialize_database():
                  PRIMARY KEY(ID)
                  )"""
         cursor.execute(query)
+
+        query = """CREATE TABLE ACTIVITIES(
+                 ID SERIAL NOT NULL,
+                 ACTIVATOR VARCHAR(30),
+                 STATUS VARCHAR(30),
+                 DATE VARCHAR(30),
+                 PRIMARY KEY(ID)
+                 )"""
+        cursor.execute(query)
+
         connection.commit()
     return redirect(url_for('site.home_page'))
 
