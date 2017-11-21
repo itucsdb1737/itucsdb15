@@ -30,4 +30,3 @@ class UserList:
             password = cursor.fetchone()[0]
             connection.commit()
             return password
-

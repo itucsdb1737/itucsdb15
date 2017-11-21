@@ -97,8 +97,10 @@ def register():
                 return render_template('signup.html', form=form, message=message )
             else:
                 new_user = User(str(form.username.data), str(form.password.data), str(form.email.data))
-                app.userlist.add_user(new_user.username,new_user.password,new_user.email)
-                app.activitylist.add_activity(new_user.username,"New user has been joined", formatDate())
+                app.userlist.add_user(new_user.username, new_user.password,new_user.email)
+                app.activitylist.add_activity(new_user.username,
+                                              "New user has been joined",
+                                              formatDate())
                 flash("Thanks for joining our site.")
                 return redirect(url_for('site.login'))
         else:
@@ -117,8 +119,29 @@ def logout():
 
 @site.route('/store')
 def store_page():
-    return render_template('store.html')
+    all_games = app.store.get_all_games()
+    return render_template('store.html', games = all_games)
 
+@site.route('/store/add', methods=['GET','POST'])
+def add_game_page():
+    if request.method == 'GET':
+        return render_template('add_game.html')
+    if request.method == 'POST':
+        game_title = request.form['game_title']
+        game_producer = request.form['game_producer']
+        game_publish_date = request.form['game_publish_date']
+        game_content = request.form['game_content']
+        game_category = request.form['game_category']
+        game_price = request.form['game_price']
+        if game_title=="" or game_producer=="" or game_publish_date=="" or game_content=="" or game_category=="" or str(game_price)=="":
+            message = 'Fill all the areas !'
+            return render_template('add_game.html', message=message)
+        else:
+            app.store.add_game(game_title,game_producer,game_publish_date,game_content,game_category,game_price)
+            app.activitylist.add_activity("GameHouse",
+                                      "New game has been added :" + game_title,
+                                      formatDate())
+            return redirect(url_for('site.store_page'))
 
 @site.route('/library')
 @login_required
@@ -128,7 +151,6 @@ def library_page():
 @site.route('/blog')
 def blog_page():
     return render_template('blog.html')
-
 
 @site.route('/profile')
 @login_required

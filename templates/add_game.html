@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block title %}Add Game{% endblock %}
+{% block content %}
+
+<h2>Add Game</h2>
+{% if message %}
+    <div style="width:25%;margin:10px" class="alert alert-warning" role="alert">{{ message }}</div>
+{% endif %}
+<form style="padding-bottom: 10px" method="POST" action="/store/add">
+        <div class="form-group col-md-3">
+            <label>Title</label>
+            <input type="text" class="form-control" id="game_title" name="game_title" placeholder="Game Title"
+                   value="{{ request.form.game_title }}">
+        </div>
+        <div class="form-group col-md-3">
+            <label>Producer</label>
+            <input type="text" class="form-control" id="game_producer" name="game_producer" placeholder="Producer"
+                   value="{{ request.form.game_producer }}">
+        </div>
+        <div class="form-group col-md-3">
+            <label>Publish Date</label>
+            <input type="date" class="form-control" id="game_publish_date" name="game_publish_date" placeholder="Publish date"
+                   value="{{ request.form.game_publish_date }}">
+        </div>
+        <div class="form-group col-md-3">
+            <label>Description</label>
+            <input type="text" class="form-control" id="game_content" name="game_content" placeholder="Description"
+                   value="{{ request.form.game_content }}">
+        </div>
+        <div class="form-group col-md-3">
+            <label>Category</label>
+            <input type="text" class="form-control" id="game_category" name="game_category" placeholder="Category"
+                   value="{{ request.form.game_category }}">
+        </div>
+        <div class="form-group col-md-3">
+            <label>Price</label>
+            <input type="number" class="form-control" id="game_price" name="game_price" placeholder="Price"
+                   value="{{ request.form.game_price }}">
+        </div>
+        <div class="display:inline-block">
+            <input style="margin-left:15px" type="submit" class="btn btn-primary" value="Add to the Store">
+        </div>
+    </form>
+
+
+{% endblock %}
+

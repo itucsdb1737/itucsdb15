@@ -8,6 +8,7 @@ from flask import json
 from handlers import site
 from userlist import UserList
 from activitylist import ActivityList
+from store import Store
 from user import User
 from functools import wraps
 from wtforms import Form, StringField, PasswordField, SubmitField, validators, BooleanField
@@ -26,6 +27,7 @@ def create_app():
     app.secret_key = "secretkey"
     app.register_blueprint(site)
     app.userlist = UserList()
+    app.store = Store()
     app.activitylist = ActivityList()
     return app
 
@@ -51,6 +53,9 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS ACTIVITIES"""
         cursor.execute(query)
 
+        query = """DROP TABLE IF EXISTS STORE"""
+        cursor.execute(query)
+
         query = """CREATE TABLE USERS(
                  ID SERIAL NOT NULL,
                  USERNAME VARCHAR(30),
@@ -62,9 +67,22 @@ def initialize_database():
 
         query = """CREATE TABLE ACTIVITIES(
                  ID SERIAL NOT NULL,
-                 ACTIVATOR VARCHAR(30),
-                 STATUS VARCHAR(30),
-                 DATE VARCHAR(30),
+                 ACTIVATOR VARCHAR(100),
+                 STATUS VARCHAR(100),
+                 DATE VARCHAR(50),
+                 PRIMARY KEY(ID)
+                 )"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE STORE(
+                 ID SERIAL NOT NULL,
+                 TITLE VARCHAR(200),
+                 PRODUCER VARCHAR(200),
+                 PUBLISH_DATE VARCHAR(150),
+                 CONTENT VARCHAR(500),
+                 CATEGORY VARCHAR(150),
+                 LIKE_COUNT INTEGER,
+                 PRICE INTEGER,
                  PRIMARY KEY(ID)
                  )"""
         cursor.execute(query)
