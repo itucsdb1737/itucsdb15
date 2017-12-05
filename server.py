@@ -9,6 +9,7 @@ from handlers import site
 from userlist import UserList
 from activitylist import ActivityList
 from store import Store
+from blog import Blog
 from user import User
 from functools import wraps
 from wtforms import Form, StringField, PasswordField, SubmitField, validators, BooleanField
@@ -27,6 +28,7 @@ def create_app():
     app.secret_key = "secretkey"
     app.register_blueprint(site)
     app.userlist = UserList()
+    app.blog = Blog()
     app.store = Store()
     app.activitylist = ActivityList()
     return app
@@ -56,6 +58,9 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS STORE"""
         cursor.execute(query)
 
+        query = """DROP TABLE IF EXISTS BLOG"""
+        cursor.execute(query)
+
         query = """CREATE TABLE USERS(
                  ID SERIAL NOT NULL,
                  USERNAME VARCHAR(30),
@@ -83,6 +88,17 @@ def initialize_database():
                  CATEGORY VARCHAR(150),
                  LIKE_COUNT INTEGER,
                  PRICE INTEGER,
+                 PRIMARY KEY(ID)
+                 )"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE BLOG(
+                 ID SERIAL NOT NULL,
+                 TITLE VARCHAR(300),
+                 CONTENT VARCHAR,
+                 PUBLISH_DATE VARCHAR(150),
+                 WRITER VARCHAR(30),
+                 LIKE_COUNT INTEGER,
                  PRIMARY KEY(ID)
                  )"""
         cursor.execute(query)

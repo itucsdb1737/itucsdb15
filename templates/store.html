@@ -2,7 +2,7 @@
 {% block title %}Store{% endblock %}
 {% block content %}
 
-    <h2 style="padding-left:10px;" class="display-4">Store Page</h2>
+    <h1 align="center">Game Store</h1>
     {% if session.logged_in %}
         <a style="margin: 80px ; position: absolute; top: -10px; right: -10px;" id="add_game" class="btn btn-outline-dark" href="/store/add">Add Game</a>
     {% endif %}
@@ -18,8 +18,8 @@
                                             <h6 class="card-subtitle mb-2 text-muted">Producer: {{game.producer}}</h6>
                                             <h6 class="card-subtitle mb-2 text-muted">Publish date: {{game.publish_date}}</h6>
                                             <p class="card-text">{{game.content}}</p>
-                                            <p>Category:<a href="#" class="card-link"> {{game.category}}</a></p>
-                                            <p class="card-text">Price: {{game.price}} ₺ </p>
+                                            <p>Category: <a href="#" class="card-link"> {{game.category}}</a></p>
+                                            <button class="btn btn-outline-dark">Purchase:  {{game.price}} ₺ </button>
                                         </div>
                                     </div>
                                 </div>

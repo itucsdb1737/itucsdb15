@@ -8,7 +8,7 @@ def formatDate():
     i = datetime.datetime.now()
     year = str(i.year)
     month = str(i.month)
-    day = str(i.day - 1)
+    day = str(i.day)
     currentDate = day + "-" + month + "-" + year
     return currentDate
 

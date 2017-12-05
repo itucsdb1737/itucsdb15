@@ -1,6 +1,67 @@
 {% extends "layout.html" %}
 {% block title %}Blog{% endblock %}
 {% block content %}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<style>
+.material-icons {vertical-align:-14%}
+</style>
+<body>
 
-<h2 style="padding-left:10px;" class="display-4">Blog Page</h2>
+<h1 align="center">Blog Page</h1>
+
+{% if message %}
+    <div style="width:25%;margin:35px" class="alert alert-warning" role="alert">{{ message }}</div>
+{% endif %}
+
+{% if session.logged_in %}
+        <a style="margin: 80px ; position: absolute; top: -15px; right: -60px;" id="add_post" class="btn btn-outline-dark" href="/blog/add_post">Add Post</a>
+{% endif %}
+
+<div align="center">
+    {% if posts %}
+        {% for post_id, post in posts %}
+            <div class="card w-50" style="margin-top:40px;">
+                <div class="card-header" align="left">Author: @{{post.writer}}  |  Published: {{post.publish_date}}</div>
+                <div class="card-block">
+                    <h4 align="center" class="card-title">{{post.title}}</h4>
+                    <p class="card-text">{{post.content}}</p>
+                </div>
+                <div class="card-footer" style="padding-bottom:5px;margin-top:20px;">
+                    {% if session.logged_in %}
+                        <div class="w3-padding " style="margin-top:-10px;">
+                            <span style="float:left; margin-right:5px;">
+                              <form method="POST" action="/blog">
+                                    <input type="text" hidden="hidden" name="tag" value="edit:{{post_id}}">
+                                    <button class="w3-btn w3-tiny w3-blue w3-ripple" type="submit"><i class="material-icons">edit</i></button>
+                              </form>
+                            </span>
+                            <span style="float:left; margin-right:5px;">
+                              <form method="POST" action="/blog">
+                                    <input type="text" hidden="hidden" name="tag" value="delete:{{post_id}}">
+                                    <button class="w3-btn w3-tiny w3-red w3-ripple" type="submit"><i class="material-icons">delete_forever</i></button>
+                              </form>
+                            </span>
+                            <span style="float:right;">
+                                <form method="POST" action="/blog">
+                                    <input type="text" hidden="hidden" name="tag" value="clap:{{post_id}}">
+                                    <button class="w3-button w3-tiny w3-green w3-ripple" type="submit"><i class="material-icons">exposure_plus_1</i></button>
+                                    <span class="font-weight-bold" style="margin-left:30px;">{{post.like_count}}</span>
+                                </form>
+                            </span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+
+
+</body>
+
+
+
 {% endblock %}

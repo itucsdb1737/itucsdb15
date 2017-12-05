@@ -4,10 +4,11 @@ import re
 import psycopg2 as dbapi2
 
 
-from flask import json
+
 from userlist import UserList
 from activity import Activity
 from activitylist import ActivityList
+from blog import Blog
 from flask import current_app as app
 from functools import wraps
 from wtforms import Form, StringField, PasswordField, SubmitField, validators, BooleanField
@@ -22,6 +23,8 @@ import time
 import datetime
 
 site = Blueprint('site', __name__)
+
+
 
 def login_required(f):
     @wraps(f)
@@ -133,13 +136,14 @@ def add_game_page():
         game_content = request.form['game_content']
         game_category = request.form['game_category']
         game_price = request.form['game_price']
-        if game_title=="" or game_producer=="" or game_publish_date=="" or game_content=="" or game_category=="" or str(game_price)=="":
+        if game_title == "" or game_producer == "" or game_publish_date == "" or game_content == "" \
+                            or game_category == "" or str(game_price) == "":
             message = 'Fill all the areas !'
             return render_template('add_game.html', message=message)
         else:
-            app.store.add_game(game_title,game_producer,game_publish_date,game_content,game_category,game_price)
+            app.store.add_game(game_title, game_producer, game_publish_date, game_content, game_category, game_price)
             app.activitylist.add_activity("GameHouse",
-                                      "New game has been added :" + game_title,
+                                      "New game has been added : " + game_title,
                                       formatDate())
             return redirect(url_for('site.store_page'))
 
@@ -148,11 +152,85 @@ def add_game_page():
 def library_page():
     return render_template('library.html', username=session['username'])
 
-@site.route('/blog')
-def blog_page():
-    return render_template('blog.html')
 
 @site.route('/profile')
 @login_required
 def profile_page():
     return render_template('profile.html', username=session['username'])
+
+
+@site.route('/blog/add_post', methods=['GET','POST'])
+def add_post():
+    if request.method == 'GET':
+        return render_template('add_post.html')
+    if request.method == 'POST':
+        post_title = request.form['post_title']
+        post_content = request.form['post_content']
+        if post_title == "" or post_content == "":
+            message = 'Fill all the areas !'
+            return render_template('add_post.html', message=message)
+        else:
+            app.blog.add_post(post_title, post_content, formatDate(), session['username'], 0)
+            app.activitylist.add_activity(session['username'],
+                                          "New post has been added to the Blog : " + post_title,
+                                          formatDate())
+            return redirect(url_for('site.blog_page'))
+
+
+
+
+@site.route('/blog', methods=['GET', 'POST'])
+def blog_page():
+    if request.method == 'POST':
+        tag = request.form['tag']
+
+        if "delete" in tag:
+            tag = tag.split(":")
+            index = tag[1]
+            app.blog.delete_post(index)
+            all_posts = app.blog.get_all_posts()
+            return render_template('blog.html', posts=all_posts)
+
+        if "clap" in tag:
+             tag = tag.split(":")
+             index = tag[1]
+             app.blog.like_post(index)
+             all_posts = app.blog.get_all_posts()
+             return render_template('blog.html', posts=all_posts)
+
+        if "edit"in tag:
+            tag = tag.split(":")
+            index = tag[1]
+            content = app.blog.get_post_content(index)
+            title = str(app.blog.get_post_title(index))
+            title = title.partition("'")[-1].rpartition("'")[0]
+            return render_template('edit_post.html', content=content, title=title, num=index)
+
+        else:
+            all_posts = app.blog.get_all_posts()
+            return render_template('blog.html', posts=all_posts)
+
+    if request.method == 'GET':
+        all_posts = app.blog.get_all_posts()
+        return render_template('blog.html', posts=all_posts)
+
+
+@site.route('/blog/edit_post', methods=['GET', 'POST'])
+def edit_page():
+     if request.method == 'GET':
+       return render_template('edit_post.html')
+     
+     if request.method == 'POST':
+       index = int(request.form['tag'])
+       new_title = request.form['post_title']
+       old_title = str(app.blog.get_post_title(index))
+       old_title = old_title.partition("'")[-1].rpartition("'")[0]
+       new_content = request.form['post_content']
+       app.blog.update_post(new_title, new_content, index)
+       all_posts = app.blog.get_all_posts()
+       app.activitylist.add_activity(session['username'],
+                                     "Post has been edited : "+ old_title , formatDate())
+       return render_template('blog.html', posts = all_posts)
+
+
+
