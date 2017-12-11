@@ -83,7 +83,7 @@ class Blog:
             cursor = connection.cursor()
             statement = """SELECT TITLE FROM BLOG WHERE (ID = (%s))"""
             cursor.execute(statement, (post_id,))
-            title = cursor.fetchone()
+            title = cursor.fetchone()[0]
             return title
 
     def get_writer(self, post_id):

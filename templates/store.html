@@ -1,14 +1,59 @@
 {% extends "layout.html" %}
 {% block title %}Store{% endblock %}
 {% block content %}
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-    <h1 align="center">Game Store</h1>
+<style>
+.bd-example {
+    display: block;
+    margin: auto;
+}
+</style>
+
+        <h1 align="center">Game Store</h1>
+
+        <div class="bd-example" style="width:60%;height:60%;">
+            <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel" >
+                <ol class="carousel-indicators">
+                    <li data-target="#carouselExampleCaptions" data-slide-to="0" class="active"></li>
+                    <li data-target="#carouselExampleCaptions" data-slide-to="1"></li>
+                    <li data-target="#carouselExampleCaptions" data-slide-to="2"></li>
+                </ol>
+                <div class="carousel-inner" role="listbox" >
+                    <div class="carousel-item active" >
+                        <img class="d-block w-100" alt="First slide" src="https://pbs.twimg.com/media/CkRry8-UUAAk--f.jpg">
+                        <div class="carousel-caption d-none d-md-block">
+                          <h3>Find most trending games</h3>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img class="d-block w-100" alt="Second slide" src="http://www.pontifex2.com/wp-content/uploads/2017/02/Pontifex11.jpg">
+                        <div class="carousel-caption d-none d-md-block">
+                          <h3>Follow hot topics</h3>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img class="d-block w-100" alt="Third slide" src="https://41zxbw463fq733z1kl101n01-wpengine.netdna-ssl.com/wp-content/uploads/2017/06/Monster-Hunter-World-1-750x430.jpg">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h3>Enjoy games with best prices</h3>
+                        </div>
+                    </div>
+                </div>
+                <a class="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselExampleCaptions" role="button" data-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="sr-only">Next</span>
+                </a>
+            </div>
+        </div>
+
     {% if session.logged_in %}
         <a style="margin: 80px ; position: absolute; top: -10px; right: -60px;" id="add_game" class="btn btn-outline-dark" href="/store/add">Add Game</a>
     {% endif %}
+
+    <h3 align="left" style="padding-left:30px;padding-top:10px;">Recently added >></h3>
 
             <div class="container m-t-md">
                 <div  class="row">

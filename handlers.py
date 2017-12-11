@@ -252,7 +252,7 @@ def blog_page():
             index = tag[1]
             content = app.blog.get_post_content(index)
             title = str(app.blog.get_post_title(index))
-            writer = str(app.blog.get_writer(index))
+            writer = app.blog.get_writer(index)
             if writer == session['username']:
                 title = title.partition("'")[-1].rpartition("'")[0]
                 return render_template('edit_post.html', content=content, title=title, num=index)
@@ -264,11 +264,11 @@ def blog_page():
         if "delete" in tag:
             tag = tag.split(":")
             index = tag[1]
-            writer = str(app.blog.get_writer(index))
+            writer = app.blog.get_writer(index)
+            post_title = str(app.blog.get_post_title(index))
             if writer == session['username']:
                 app.blog.delete_post(index)
                 all_posts = app.blog.get_all_posts()
-                post_title = app.blog.get_post_title(index)
                 app.activitylist.add_activity(session['username'],
                                           "Post has been deleted : " + post_title,
                                           formatDate())
