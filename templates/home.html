@@ -1,13 +1,39 @@
 {% extends "layout.html" %}
 {% block title %}Blog{% endblock %}
 {% block content %}
+<style>
+.material-icons {vertical-align:-14%}
+.alert {
+    padding: 10px;
+    background-color: #151B54;
+    color: white;
+}
+
+.closebtn {
+    margin-left: 10px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.closebtn:hover {
+    color: black;
+}
+</style>
 
   {% block messages %}
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         <ul class="flashes list-unstyled" style="padding-left: 15px ;margin-top:10px; font-size:130%">
         {% for message in messages %}
-          <li class="font-weight-light">{{ message }}</li>
+          <div class="alert">
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+            <strong></strong> {{ message }}
+          </div>
         {% endfor %}
         </ul>
       {% endif %}
@@ -15,7 +41,7 @@
   {% endblock %}
 
   <div class="jumbotron">
-    <h1 class="display-3">Welcome to GameHouse !</h1>
+    <h1 class="display-3">Welcome to GameHouse</h1>
     <p class="lead">The ultimate gaming platform.</p>
     <hr class="my-2">
     <p>Explore many new games in the store.
@@ -27,6 +53,7 @@
       <a class="btn btn-success btn-lg" href="/signup" role="button">Join Us !</a>
     </p>
   </div>
+
 
       <table style="margin-top:50px" id="act_table" class="table table-hover">
         <thead>

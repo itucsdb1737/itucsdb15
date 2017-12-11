@@ -7,7 +7,7 @@
 
     <h1 align="center">Game Store</h1>
     {% if session.logged_in %}
-        <a style="margin: 80px ; position: absolute; top: -10px; right: -10px;" id="add_game" class="btn btn-outline-dark" href="/store/add">Add Game</a>
+        <a style="margin: 80px ; position: absolute; top: -10px; right: -60px;" id="add_game" class="btn btn-outline-dark" href="/store/add">Add Game</a>
     {% endif %}
 
             <div class="container m-t-md">
@@ -23,10 +23,12 @@
                                             <p class="card-text">{{game.content}}</p>
                                             <p>Category: <a href="#" class="card-link"> {{game.category}}</a></p>
                                             <p class="card-text">Price: {{game.price}} $</p>
+                                            {% if session.logged_in %}
                                             <form method="POST" action="/library">
                                                 <input type="text" hidden="hidden" name="buy_now" value="title:{{game.title}}:price:{{game.price}}:">
                                                 <span style="float:right;"><button  class="btn btn-outline-dark" type="submit"><i class="material-icons">shopping_cart</i> Buy Now</button></span>
                                             </form>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>

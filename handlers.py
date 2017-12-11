@@ -230,6 +230,7 @@ def add_post():
             app.activitylist.add_activity(session['username'],
                                           "New post has been added to the Blog : " + post_title,
                                           formatDate())
+
             return redirect(url_for('site.blog_page'))
 
 
@@ -238,13 +239,6 @@ def add_post():
 def blog_page():
     if request.method == 'POST':
         tag = request.form['tag']
-
-        if "delete" in tag:
-            tag = tag.split(":")
-            index = tag[1]
-            app.blog.delete_post(index)
-            all_posts = app.blog.get_all_posts()
-            return render_template('blog.html', posts=all_posts)
 
         if "clap" in tag:
              tag = tag.split(":")
@@ -258,8 +252,32 @@ def blog_page():
             index = tag[1]
             content = app.blog.get_post_content(index)
             title = str(app.blog.get_post_title(index))
-            title = title.partition("'")[-1].rpartition("'")[0]
-            return render_template('edit_post.html', content=content, title=title, num=index)
+            writer = str(app.blog.get_writer(index))
+            if writer == session['username']:
+                title = title.partition("'")[-1].rpartition("'")[0]
+                return render_template('edit_post.html', content=content, title=title, num=index)
+            else:
+                message = "Only author can edit the post !"
+                all_posts = app.blog.get_all_posts()
+                return render_template('blog.html',message=message, posts=all_posts)
+
+        if "delete" in tag:
+            tag = tag.split(":")
+            index = tag[1]
+            writer = str(app.blog.get_writer(index))
+            if writer == session['username']:
+                app.blog.delete_post(index)
+                all_posts = app.blog.get_all_posts()
+                post_title = app.blog.get_post_title(index)
+                app.activitylist.add_activity(session['username'],
+                                          "Post has been deleted : " + post_title,
+                                          formatDate())
+                return render_template('blog.html', posts=all_posts)
+            else:
+                message = "Only author can delete the post !"
+                all_posts = app.blog.get_all_posts()
+                return render_template('blog.html',message=message, posts=all_posts)
+
 
         else:
             all_posts = app.blog.get_all_posts()
@@ -286,6 +304,8 @@ def edit_page():
        app.activitylist.add_activity(session['username'],
                                      "Post has been edited : "+ old_title , formatDate())
        return render_template('blog.html', posts = all_posts)
+
+
 
 
 

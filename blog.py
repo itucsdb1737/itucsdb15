@@ -62,6 +62,14 @@ class Blog:
             post = cursor.fetchone()
             return post
 
+    def get_publishers_post_id(self, writer):
+        with dbapi2.connect(app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT ID FROM BLOG WHERE (WRITER = %s)"""
+            cursor.execute(query, (writer,))
+            post_id = cursor.fetchone()
+            return post_id
+
     def delete_post(self, post_id):
         with dbapi2.connect(app.config['dsn']) as connection:
             cursor = connection.cursor()
@@ -77,6 +85,16 @@ class Blog:
             cursor.execute(statement, (post_id,))
             title = cursor.fetchone()
             return title
+
+    def get_writer(self, post_id):
+        with dbapi2.connect(app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            statement = """SELECT WRITER FROM BLOG WHERE (ID = (%s))"""
+            cursor.execute(statement, (post_id,))
+            writer = cursor.fetchone()[0]
+            return writer
+
+
 
     def get_post_content(self, post_id):
         with dbapi2.connect(app.config['dsn']) as connection:

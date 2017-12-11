@@ -2,7 +2,7 @@
 {% block title %}Add Game{% endblock %}
 {% block content %}
 
-<h2>Add Game</h2>
+<h2 style="padding-left:20px;">Add Game</h2>
 {% if message %}
     <div style="width:25%;margin:10px" class="alert alert-warning" role="alert">{{ message }}</div>
 {% endif %}
@@ -31,6 +31,21 @@
             <label>Category</label>
             <input type="text" class="form-control" id="game_category" name="game_category" placeholder="Category"
                    value="{{ request.form.game_category }}">
+            <!--
+            <select class="custom-select">
+                <option selected>Category</option>
+                <option name="1">Action</option>
+                <option name="2">Arcade</option>
+                <option name="3">Racing</option>
+                <option name="4">Horror</option>
+                <option name="5">Sport</option>
+                <option name="6">Simulation</option>
+                <option name="7">Strategy</option>
+                <option name="8">Platform</option>
+                <option name="9">Children</option>
+                <option name="10">Other</option>
+            </select>
+            -->
         </div>
         <div class="form-group col-md-3">
             <label>Price</label>

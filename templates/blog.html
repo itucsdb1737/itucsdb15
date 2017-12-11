@@ -6,17 +6,40 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <style>
 .material-icons {vertical-align:-14%}
+.alert {
+    padding: 10px;
+    background-color: #f44336;
+    color: white;
+}
+
+.closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.closebtn:hover {
+    color: black;
+}
 </style>
 <body>
 
 <h1 align="center">Blog Page</h1>
 
 {% if message %}
-    <div style="width:25%;margin:35px" class="alert alert-warning" role="alert">{{ message }}</div>
+    <div class="alert">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        <strong>Warning : </strong> {{ message }}
+    </div>
 {% endif %}
 
 {% if session.logged_in %}
-        <a style="margin: 80px ; position: absolute; top: -15px; right: -60px;" id="add_post" class="btn btn-outline-dark" href="/blog/add_post">Add Post</a>
+        <a style="margin: 80px ; position: absolute; top: -10px; right: -60px;" id="add_post" class="btn btn-outline-dark" href="/blog/add_post">Add Post</a>
 {% endif %}
 
 <div align="center">
