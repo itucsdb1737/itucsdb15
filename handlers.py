@@ -25,7 +25,6 @@ import datetime
 site = Blueprint('site', __name__)
 
 
-
 def login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -105,6 +104,7 @@ def register():
                                               "New user has been joined",
                                               formatDate())
                 flash("Thanks for joining our site.")
+                app.userlist.update_join_date(new_user.username, formatDate())
                 return redirect(url_for('site.login'))
         else:
             return render_template('signup.html', form=form)
@@ -147,16 +147,72 @@ def add_game_page():
                                       formatDate())
             return redirect(url_for('site.store_page'))
 
-@site.route('/library')
+@site.route('/library', methods=['GET', 'POST'])
 @login_required
 def library_page():
-    return render_template('library.html', username=session['username'])
+    if request.method == 'GET':
+        library_games_all = app.library.get_all_games()
+        return render_template('library.html', username=session['username'], games=library_games_all)
 
+    if request.method == 'POST':
+        tag = request.form['buy_now']
+        tag = tag.split(":")
+        title = tag[1]
+        price = tag[3]
+        content = app.store.get_game_content(title)
+        app.library.add_game(title,"",formatDate(),content,"",price)
+
+        return redirect(url_for('site.store_page'))
 
 @site.route('/profile')
 @login_required
 def profile_page():
-    return render_template('profile.html', username=session['username'])
+    username = session['username']
+    email = app.userlist.get_email(username)
+    name_surname = app.userlist.get_name(username)
+    date = app.userlist.get_birth_date(username)
+    gender = app.userlist.get_gender(username)
+    address = app.userlist.get_address(username)
+    phone_number = app.userlist.get_phone(username)
+    join_date = app.userlist.get_join_date(username)
+    return render_template('profile.html', username=username, email=email, name=name_surname,
+                           date=date, gender=gender, address=address, phone_number=phone_number, join_date=join_date)
+
+@site.route('/profile/edit_profile', methods=['GET','POST'])
+def edit_profile():
+    username = session['username']
+    if request.method == 'GET':
+        return render_template('edit_profile.html')
+    if request.method == 'POST':
+        name = request.form['user_name']
+        date = request.form['birth_date']
+        gender = request.form['gender']
+        address = request.form['address']
+        phone_number = request.form['phone']
+        if name:
+            app.userlist.update_name(username, name)
+        if date:
+            app.userlist.update_birth_date(username, date)
+        if gender:
+            app.userlist.update_gender(username, gender)
+        if address:
+            app.userlist.update_address(username, address)
+        if phone_number:
+            app.userlist.update_phone(username, phone_number)
+        else:
+            return redirect(url_for('site.profile_page'))
+
+        return redirect(url_for('site.profile_page'))
+
+@site.route('/profile/delete_profile')
+def delete_profile():
+    username = session['username']
+    app.userlist.delete_user(username)
+    session['logged_in']=False
+    session.clear()
+    flash('You deleted your account.')
+    return redirect(url_for('site.home_page'))
+
 
 
 @site.route('/blog/add_post', methods=['GET','POST'])
@@ -175,7 +231,6 @@ def add_post():
                                           "New post has been added to the Blog : " + post_title,
                                           formatDate())
             return redirect(url_for('site.blog_page'))
-
 
 
 

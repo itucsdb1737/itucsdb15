@@ -13,6 +13,14 @@ class Store:
             connection.commit()
             cursor.close()
 
+    def get_game_content(self, game_title):
+        with dbapi2.connect(app.config['dsn']) as connection:
+            cursor = connection.cursor()
+            query = """SELECT CONTENT FROM STORE WHERE (TITLE = %s)"""
+            cursor.execute(query, (game_title,))
+            game_content = cursor.fetchone()
+            return game_content
+
     def get_all_games(self):
         with dbapi2.connect(app.config['dsn']) as connection:
             cursor = connection.cursor()

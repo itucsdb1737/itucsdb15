@@ -5,4 +5,26 @@
     {% if session.logged_in %}
         <h1 align="center">Library of {{username}}</h1>
     {% endif %}
+
+    {% if message %}
+        <div style="width:25%;margin:35px" class="alert alert-warning" role="alert">{{ message }}</div>
+    {% endif %}
+
+    <div style="margin-top:80px;padding-left:50px;padding-right:50px;" class="list-group">
+        {% if games %}
+            {% for game_id, game in games %}
+              <div class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{game.title}}</h5>
+                    <small>Purchase Date: {{game.publish_date}}</small>
+                </div>
+                  <small>Price: {{game.price}} $</small>
+              </div>
+            {% endfor %}
+          {% endif %}
+    </div>
+
+
+
+
 {% endblock %}

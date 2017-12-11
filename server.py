@@ -10,6 +10,7 @@ from userlist import UserList
 from activitylist import ActivityList
 from store import Store
 from blog import Blog
+from library import Library
 from user import User
 from functools import wraps
 from wtforms import Form, StringField, PasswordField, SubmitField, validators, BooleanField
@@ -30,6 +31,7 @@ def create_app():
     app.userlist = UserList()
     app.blog = Blog()
     app.store = Store()
+    app.library = Library()
     app.activitylist = ActivityList()
     return app
 
@@ -61,11 +63,20 @@ def initialize_database():
         query = """DROP TABLE IF EXISTS BLOG"""
         cursor.execute(query)
 
+        query = """DROP TABLE IF EXISTS LIBRARY"""
+        cursor.execute(query)
+
         query = """CREATE TABLE USERS(
                  ID SERIAL NOT NULL,
                  USERNAME VARCHAR(30),
                  PASSWORD VARCHAR(30),
                  EMAIL VARCHAR(30),
+                 JOIN_DATE VARCHAR DEFAULT '',
+                 BIRTH_DATE VARCHAR DEFAULT '',
+                 NAME VARCHAR DEFAULT '',
+                 GENDER VARCHAR DEFAULT '',
+                 ADDRESS VARCHAR DEFAULT '',
+                 PHONE VARCHAR DEFAULT '',
                  PRIMARY KEY(ID)
                  )"""
         cursor.execute(query)
@@ -84,7 +95,7 @@ def initialize_database():
                  TITLE VARCHAR(200),
                  PRODUCER VARCHAR(200),
                  PUBLISH_DATE VARCHAR(150),
-                 CONTENT VARCHAR(500),
+                 CONTENT VARCHAR,
                  CATEGORY VARCHAR(150),
                  LIKE_COUNT INTEGER,
                  PRICE INTEGER,
@@ -99,6 +110,19 @@ def initialize_database():
                  PUBLISH_DATE VARCHAR(150),
                  WRITER VARCHAR(30),
                  LIKE_COUNT INTEGER,
+                 PRIMARY KEY(ID)
+                 )"""
+        cursor.execute(query)
+
+        query = """CREATE TABLE LIBRARY(
+                 ID SERIAL NOT NULL,
+                 TITLE VARCHAR(200),
+                 PRODUCER VARCHAR(200),
+                 PUBLISH_DATE VARCHAR(150),
+                 CONTENT VARCHAR,
+                 CATEGORY VARCHAR(150),
+                 LIKE_COUNT INTEGER,
+                 PRICE INTEGER,
                  PRIMARY KEY(ID)
                  )"""
         cursor.execute(query)

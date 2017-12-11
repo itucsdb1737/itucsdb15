@@ -17,17 +17,8 @@
 
       <div style="font-size:110%;" class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Store
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="#">Arcade</a>
-              <a class="dropdown-item" href="#">Action</a>
-              <a class="dropdown-item" href="#">Strategy</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="/store">All Games</a>
-            </div>
+          <li class="nav-item">
+            <a class="nav-link" href="/store">Store</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/library">Library</a>
@@ -35,9 +26,11 @@
           <li class="nav-item">
             <a class="nav-link" href="/blog">Blog</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/profile">Profile</a>
-          </li>
+          {% if session.logged_in %}
+            <li class="nav-item">
+              <a class="nav-link" href="/profile">Profile</a>
+            </li>
+          {% endif %}
         </ul>
         <form style="margin: 0 35px" class="form-inline my-2 my-lg-0">
           <input class="form-control mr-sm-2" type="search" placeholder="type something" aria-label="Search">

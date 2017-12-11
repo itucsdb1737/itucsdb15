@@ -1,8 +1,102 @@
 {% extends "layout.html" %}
 {% block title %}Profile{% endblock %}
 {% block content %}
+<head>
+    <style>
+.user-row {
+    margin-bottom: 14px;
+}
+
+.user-row:last-child {
+    margin-bottom: 0;
+}
+
+.dropdown-user {
+    margin: 13px 0;
+    padding: 5px;
+    height: 100%;
+}
+
+.dropdown-user:hover {
+    cursor: pointer;
+}
+
+.table-user-information > tbody > tr {
+    border-top: 1px solid rgb(221, 221, 221);
+}
+
+.table-user-information > tbody > tr:first-child {
+    border-top: 0;
+}
+
+
+.table-user-information > tbody > tr > td {
+    border-top: 0;
+}
+.toppad
+{margin-top:20px;
+}
+
+    </style>
+</head>
 
     {% if session.logged_in %}
-        <h1 align="center">Profile of {{username}}</h1>
+        <h1 align="center">My Profile</h1>
+
+        <div style="margin-left:20px;" class="container">
+            <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xs-offset-0 col-sm-offset-0 col-md-offset-3 col-lg-offset-3 toppad" >
+          <div class="panel panel-info">
+            <div style="margin-left:15px;" class="panel-heading">
+              <h3 class="panel-title">@{{username}}</h3>
+            </div>
+            <div class="panel-body">
+              <div class="row">
+                <div  class="col-md-3 col-lg-3 " align="center"> <img alt="User Pic" style="width:150px;height:150px;" src="https://www.graphicsprings.com/filestorage/stencils/dc564e692b22957680c206d57ed2f20f.svg" class="img-circle img-responsive"> </div>
+                <div class=" col-md-9 col-lg-9 ">
+                  <table class="table table-user-information">
+                    <tbody>
+                      <tr>
+                        <td>Name-Surname</td>
+                        <td>{{name}}</td>
+                      </tr>
+                      <tr>
+                        <td>Join date</td>
+                        <td>{{join_date}}</td>
+                      </tr>
+                      <tr>
+                        <td>Date of Birth</td>
+                        <td>{{date}}</td>
+                      </tr>
+                      <tr>
+                        <td>Gender</td>
+                        <td>{{gender}}</td>
+                      </tr>
+                      <tr>
+                        <td>Home Address</td>
+                        <td>{{address}}</td>
+                      </tr>
+                      <tr>
+                        <td>Email</td>
+                        <td>{{email}}</td>
+                      </tr>
+                        <td>Phone Number</td>
+                        <td>{{phone_number}}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <a href="/profile/edit_profile" class="btn btn-primary">Edit Profile</a>
+                  <a href="/profile/delete_profile" class="btn btn-primary">Delete Account</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     {% endif %}
+
+
+
+
 {% endblock %}
