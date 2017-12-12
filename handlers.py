@@ -241,7 +241,6 @@ def blog_page():
             title = str(app.blog.get_post_title(index))
             writer = app.blog.get_writer(index)
             if writer == session['username']:
-                title = title.partition("'")[-1].rpartition("'")[0]
                 return render_template('edit_post.html', content=content, title=title, num=index)
             else:
                 message = "Only author can edit the post !"
@@ -283,8 +282,7 @@ def edit_page():
      if request.method == 'POST':
        index = int(request.form['tag'])
        new_title = request.form['post_title']
-       old_title = str(app.blog.get_post_title(index))
-       old_title = old_title.partition("'")[-1].rpartition("'")[0]
+       old_title = app.blog.get_post_title(index)
        new_content = request.form['post_content']
        app.blog.update_post(new_title, new_content, index)
        all_posts = app.blog.get_all_posts()
