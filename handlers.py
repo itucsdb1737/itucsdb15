@@ -151,7 +151,8 @@ def add_game_page():
 @login_required
 def library_page():
     if request.method == 'GET':
-        library_games_all = app.library.get_all_games()
+        buyer = session['username']
+        library_games_all = app.library.get_all_games(buyer)
         return render_template('library.html', username=session['username'], games=library_games_all)
 
     if request.method == 'POST':
@@ -159,9 +160,9 @@ def library_page():
         tag = tag.split(":")
         title = tag[1]
         price = tag[3]
+        username = session['username']
         content = app.store.get_game_content(title)
-        app.library.add_game(title,"",formatDate(),content,"",price)
-
+        app.library.add_game(title,"",formatDate(),content,"",price, username)
         return redirect(url_for('site.store_page'))
 
 @site.route('/profile')

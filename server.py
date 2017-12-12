@@ -123,6 +123,7 @@ def initialize_database():
                  CATEGORY VARCHAR(150),
                  LIKE_COUNT INTEGER,
                  PRICE INTEGER,
+                 BUYER VARCHAR,
                  PRIMARY KEY(ID)
                  )"""
         cursor.execute(query)

@@ -24,8 +24,9 @@
         </div>
         <div class="form-group col-md-3">
             <label>Description</label>
-            <input type="text" class="form-control" id="game_content" name="game_content" placeholder="Description"
-                   value="{{ request.form.game_content }}">
+            <textarea class="form-control" id="game_content" name="game_content" rows="10" placeholder="Description"
+                  value="{{ request.form.game_content }}">
+            </textarea>
         </div>
         <div class="form-group col-md-3">
             <label>Category</label>
