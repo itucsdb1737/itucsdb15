@@ -13,8 +13,6 @@ def formatDate():
     return currentDate
 
 class ActivityList:
-    def __init__(self):
-            self.last_mod_id = None
 
     def add_activity(self, activator, status, date):
         with dbapi2.connect(app.config['dsn']) as connection:

@@ -1,14 +1,6 @@
-import os
-import json
-import re
 import psycopg2 as dbapi2
 
 
-
-from userlist import UserList
-from activity import Activity
-from activitylist import ActivityList
-from blog import Blog
 from flask import current_app as app
 from functools import wraps
 from wtforms import Form, StringField, PasswordField, SubmitField, validators, BooleanField
@@ -19,8 +11,6 @@ from flask import redirect
 from flask.helpers import url_for
 from flask import flash, request, session
 from activitylist import formatDate
-import time
-import datetime
 
 site = Blueprint('site', __name__)
 
@@ -52,7 +42,6 @@ class SignupForm(Form):
 
 @site.route('/login', methods=['GET','POST'])
 def login():
-    message = None
     if request.method == 'GET':
         return render_template('login.html')
 
@@ -215,7 +204,6 @@ def delete_profile():
     return redirect(url_for('site.home_page'))
 
 
-
 @site.route('/blog/add_post', methods=['GET','POST'])
 def add_post():
     if request.method == 'GET':
@@ -231,9 +219,7 @@ def add_post():
             app.activitylist.add_activity(session['username'],
                                           "New post has been added to the Blog : " + post_title,
                                           formatDate())
-
             return redirect(url_for('site.blog_page'))
-
 
 
 @site.route('/blog', methods=['GET', 'POST'])
@@ -271,8 +257,8 @@ def blog_page():
                 app.blog.delete_post(index)
                 all_posts = app.blog.get_all_posts()
                 app.activitylist.add_activity(session['username'],
-                                          "Post has been deleted : " + post_title,
-                                          formatDate())
+                                              "Post has been deleted : " + post_title,
+                                              formatDate())
                 return render_template('blog.html', posts=all_posts)
             else:
                 message = "Only author can delete the post !"
@@ -302,8 +288,7 @@ def edit_page():
        new_content = request.form['post_content']
        app.blog.update_post(new_title, new_content, index)
        all_posts = app.blog.get_all_posts()
-       app.activitylist.add_activity(session['username'],
-                                     "Post has been edited : "+ old_title , formatDate())
+       app.activitylist.add_activity(session['username'], "Post has been edited : "+ old_title , formatDate())
        return render_template('blog.html', posts = all_posts)
 
 
