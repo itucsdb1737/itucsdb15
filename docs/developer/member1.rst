@@ -141,6 +141,48 @@ Log out the user with a flash message and redirects it to the home page. Flash m
         flash('You were just logged out.')
         return redirect(url_for('site.home_page'))
 
+* /STORE
+
+Store page shows all the games in a card format with the game informations. So it returns all games to the store.html
+
+.. code-block:: python
+
+    @site.route('/store')
+    def store_page():
+        all_games = app.store.get_all_games()
+        return render_template('store.html', games = all_games)
+
+
+
+
+* /STORE/ADD
+
+It adds a game to the store with filling the add game form with game informations and submit. It returns an error message if all the areas are not filled as **'Fill all the areas !'**.
+It renders to the store page if the game is added and adds activity to the activity list as **"New game has been added : "**.
+
+.. code-block:: python
+
+    @site.route('/store/add', methods=['GET','POST'])
+    def add_game_page():
+        if request.method == 'GET':
+            return render_template('add_game.html')
+        if request.method == 'POST':
+            game_title = request.form['game_title']
+            game_producer = request.form['game_producer']
+            game_publish_date = request.form['game_publish_date']
+            game_content = request.form['game_content']
+            game_category = request.form['game_category']
+            game_price = request.form['game_price']
+            if game_title == "" or game_producer == "" or game_publish_date == "" or game_content == "" \
+                                or game_category == "" or str(game_price) == "":
+                message = 'Fill all the areas !'
+                return render_template('add_game.html', message=message)
+            else:
+                app.store.add_game(game_title, game_producer, game_publish_date, game_content, game_category, game_price)
+                app.activitylist.add_activity("GameHouse",
+                                          "New game has been added : " + game_title,
+                                          formatDate())
+                return redirect(url_for('site.store_page'))
 
 
 
