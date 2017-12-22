@@ -198,7 +198,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'itucsdb.tex', 'itucsdb Documentation',
-   'Team Name', 'manual'),
+   'GameHouse', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -228,7 +228,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'itucsdb', 'itucsdb Documentation',
-     ['Team Name'], 1)
+     ['GameHouse'], 1)
 ]
 
 # If true, show URL addresses after external links.
