@@ -12,7 +12,7 @@ Welcome to itucsdb1737 documentation!
 
 **Project Name: GameHouse**
 
-*GameHouse is a gaming platform, developed for gamers and gaming enthusiasts
+* GameHouse is a gaming platform, developed for gamers and gaming enthusiasts
 Users can add their games to the store to share it and sell their games to the other gamers
 Gamers can purchase games from store and track the purchased ones from the library.
 Posts about gaming can be shared with gamers in the blog section.
