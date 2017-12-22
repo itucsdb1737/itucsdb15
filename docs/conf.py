@@ -44,8 +44,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'itucsdb'
-copyright = '2015, Team Name'
+project = 'itucsdb1737'
+copyright = '2015, GameHouse '
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -197,7 +197,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'itucsdb.tex', 'itucsdb Documentation',
+  ('index', 'itucsdb.tex', 'itucsdb1737 Documentation',
    'GameHouse', 'manual'),
 ]
 
@@ -227,7 +227,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'itucsdb', 'itucsdb Documentation',
+    ('index', 'itucsdb1737', 'itucsdb1737 Documentation',
      ['GameHouse'], 1)
 ]
 
@@ -241,8 +241,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'itucsdb', 'itucsdb Documentation',
-   'GameHouse', 'itucsdb', 'One line description of project.',
+  ('index', 'itucsdb1737', 'itucsdb1737 Documentation',
+   'GameHouse', 'itucsdb1737', 'One line description of project.',
    'Miscellaneous'),
 ]
 
