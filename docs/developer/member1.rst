@@ -74,8 +74,72 @@ if not it adds the user to the userlist and updates the activity feed with "New 
 Login User
 ***********
 
+* /LOGIN
+
+In the login operation, a form is used the take username and password parameters. If there is not a user with taken parameters it gives a message as **'Invalid credentials!'**.
+If the login is successful, we start a session for this user with **session['logged_in']**. A message is sent to the home page as **'You were just logged in as ' + attempted_username**
+
+.. code-block:: python
+
+    @site.route('/login', methods=['GET','POST'])
+    def login():
+        if request.method == 'GET':
+            return render_template('login.html')
+
+        if request.method == 'POST':
+            attempted_username = request.form['username']
+            attempted_password = request.form['password']
+            user = app.userlist.get_user(attempted_username)
+            if user is None:
+                message = 'Invalid credentials!'
+                return render_template('login.html', message=message)
+            else:
+                password = app.userlist.get_password(attempted_username)
+                if password == attempted_password:
+                    session['logged_in'] = True
+                    session['username'] = attempted_username
+                    flash('You were just logged in as ' + attempted_username + ".")
+                    next_page = request.args.get('next', url_for('site.home_page'))
+                    return redirect(next_page)
+                else:
+                    message = 'Invalid credentials !'
+                    return render_template('login.html', message=message)
+        else:
+            message = 'Invalid credentials !'
+            return render_template('login.html', message=message)
 
 
+* LOGIN DECORATOR
+
+Decator is used to prevent some places to open without login in. So it returns a flash message if a place is visited wtihout login as **"You need to login first."** and
+returns the user to the login page. If it is successful, it allows user to enter the place.
+
+.. code-block:: python
+
+    def login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            flash("You need to login first.")
+            return redirect(url_for('site.login'))
+    return wrap
+
+
+* /LOG OUT
+
+Log out the user with a flash message and redirects it to the home page. Flash message is given as **'You were just logged out.'**
+
+
+.. code-block:: python
+
+    @site.route("/logout")
+    @login_required
+    def logout():
+        session.clear()
+        flash('You were just logged out.')
+        return redirect(url_for('site.home_page'))
 
 
 
