@@ -10,7 +10,6 @@ Users Table Initialization
 |  The Users table is initialized in the server.py as follow:
 
 .. code-block:: python
-	:linenos:
 
     @app.route('/initdb_1737')
     def initialize_database():
