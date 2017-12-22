@@ -1,6 +1,17 @@
 Parts Implemented by Batuhan Islek
 ================================
 
+
+
+
+
+
+
+
+
+
+**TABLES**
+
 USERS
 ########
 Users Table Initialization
@@ -225,3 +236,104 @@ ADDING, DELETING, UPDATING and GETTING user informations is handled in this clas
                 cursor.execute(query, (username,))
                 connection.commit()
                 cursor.close()
+
+
+
+
+STORE
+########
+Store Table Initialization
+***********
+
+The Store table is initialized in the server.py as follow:
+
+.. code-block:: python
+
+    query = """CREATE TABLE STORE(
+                 ID SERIAL NOT NULL,
+                 TITLE VARCHAR(200),
+                 PRODUCER VARCHAR(200),
+                 PUBLISH_DATE VARCHAR(150),
+                 CONTENT VARCHAR,
+                 CATEGORY VARCHAR(150),
+                 LIKE_COUNT INTEGER,
+                 PRICE INTEGER,
+                 PRIMARY KEY(ID)
+                 )"""
+    cursor.execute(query)
+
+
+
+Store entity has 8 attributes.
+    - **ID :** ID is a serial value that increments when new users are added. It is also the primary key of the games.
+    - **TITLE :** Title is VARCHAR type attribute that is limited with 200 characters.
+    - **PRODUCER :** Producer is VARCHAR type attribute that is limited with 200 characters.
+    - **PUBLISH_DATE :** Publish date is VARCHAR type with limit of 150 characters.
+    - **CONTENT :** Content is VARCHAR type.
+    - **CATEGORY :** Category is VARCHAR type.
+    - **LIKE_COUNT :** Like count is INTEGER type. It holds the name and surname of the user.
+    - **PRICE :** Price is INTEGER type and given empty string as DEFAULT.
+
+
+
+Game Class Definition
+***********
+The game class is defined in user.py as follows:
+
+.. code-block:: python
+
+    class Game:
+    def __init__(self, title, producer, publish_date, content, category, price):
+        self.title = title
+        self.producer = producer
+        self.publish_date = publish_date
+        self.content = content
+        self.like_count = 0
+        self.category = category
+        self.price = price
+
+* Game class has title, producer, publish_date, content, category and price attributes. Only the like count does not taken as parameter to initalize the game.
+It is give as 0 at start. This is used to modal games to add them into the store.
+
+
+
+Store Class Definition
+***********
+
+The store class is defined in store.py as follows:
+
+.. code-block:: python
+
+    class Store:
+        def add_game(self, title, producer, publish_date, content, category, price):
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """INSERT INTO STORE (TITLE, PRODUCER, PUBLISH_DATE, CONTENT, CATEGORY, LIKE_COUNT, PRICE)
+                                              VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+                cursor.execute(query, (title, producer, publish_date, content, category, 0, price,))
+                connection.commit()
+                cursor.close()
+
+        def get_game_content(self, game_title):
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """SELECT CONTENT FROM STORE WHERE (TITLE = %s)"""
+                cursor.execute(query, (game_title,))
+                game_content = cursor.fetchone()
+                return game_content
+
+        def get_all_games(self):
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """SELECT ID, TITLE, PRODUCER, PUBLISH_DATE, CONTENT, CATEGORY, PRICE FROM STORE
+                           ORDER BY ID DESC"""
+                cursor.execute(query)
+                all_games = [(id, Game(title, producer, publish_date, content, category, price))
+                            for id, title, producer, publish_date, content, category, price in cursor]
+
+                connection.commit()
+                cursor.close()
+            return all_games
+
+*Store class has 3 functions that is used for ADDING and SHOWING the game informations in the game store. So it has only adding and getting functions for the games.
+The database operations of the games are done in this class.
