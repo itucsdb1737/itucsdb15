@@ -739,6 +739,159 @@ BLOG
 Blog Table Initialization
 ***********
 
+Blog table is dropped and created in the server.py
+
+.. code-block:: python
+
+    query = """DROP TABLE IF EXISTS BLOG"""
+
+    query = """CREATE TABLE BLOG(
+                 ID SERIAL NOT NULL,
+                 TITLE VARCHAR(300),
+                 CONTENT VARCHAR,
+                 PUBLISH_DATE VARCHAR(150),
+                 WRITER VARCHAR(30),
+                 LIKE_COUNT INTEGER,
+                 PRIMARY KEY(ID)
+                 )"""
+    cursor.execute(query)
+
 
 Post Class Definition
 ***********
+
+In the post class, title, content, publish date, writer and like count is initialized. It is used as a model to add posts to the blog page.
+
+.. code-block:: python
+
+    class Post:
+    def __init__(self, title, content, publish_date, writer, like_count):
+        self.content = content
+        self.title = title
+        self.publish_date = publish_date
+        self.writer = writer
+        self.like_count = like_count
+
+Blog Class Definition
+***********
+
+All create, delete, like and get oeprations of the posts are done in this class.
+
+.. code-block:: python
+
+    class Blog:
+        def __init__(self):
+            self.last_post_id = None
+
+        def add_post(self, title, text, publish_date, writer, like_count):
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """INSERT INTO BLOG (TITLE, CONTENT, PUBLISH_DATE, WRITER, LIKE_COUNT) VALUES (%s, %s, %s, %s, %s)"""
+                cursor.execute(query, (title, text, publish_date, writer, like_count,))
+                connection.commit()
+                cursor.close()
+
+        def get_post_id(self, title, writer):
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """SELECT ID FROM BLOG WHERE (TITLE = %s AND WRITER = %s)"""
+                cursor.execute(query, (title, writer,))
+                post = cursor.fetchone()
+                return post
+
+        def like_post(self, post_id):
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """UPDATE BLOG
+                           SET LIKE_COUNT = LIKE_COUNT+1
+                           WHERE (ID = %s)"""
+                cursor.execute(query, (post_id,))
+                connection.commit()
+                cursor.close()
+
+        def update_post(self, title, content, post_id):
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """UPDATE BLOG
+                           SET TITLE = (%s),
+                           CONTENT = (%s)
+                           WHERE (ID = %s)"""
+                cursor.execute(query, (title, content, post_id,))
+                connection.commit()
+                cursor.close()
+
+        def dislike_post(self, post_id):
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """UPDATE BLOG
+                           SET LIKE_COUNT = LIKE_COUNT-1
+                           WHERE (ID = %s)"""
+                cursor.execute(query, (post_id,))
+                connection.commit()
+                cursor.close()
+
+        def get_like_count(self,post_id):
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """SELECT LIKE_COUNT FROM BLOG WHERE (ID = %s)"""
+                cursor.execute(query, (post_id,))
+                post = cursor.fetchone()
+                return post
+
+        def get_publishers_post_id(self, writer):
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """SELECT ID FROM BLOG WHERE (WRITER = %s)"""
+                cursor.execute(query, (writer,))
+                post_id = cursor.fetchone()
+                return post_id
+
+        def delete_post(self, post_id):
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                statement = """DELETE FROM BLOG WHERE (ID = (%s))"""
+                cursor.execute(statement, (post_id,))
+                connection.commit()
+                cursor.close()
+
+        def get_post_title(self, post_id):
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                statement = """SELECT TITLE FROM BLOG WHERE (ID = (%s))"""
+                cursor.execute(statement, (post_id,))
+                title = cursor.fetchone()[0]
+                return title
+
+        def get_writer(self, post_id):
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                statement = """SELECT WRITER FROM BLOG WHERE (ID = (%s))"""
+                cursor.execute(statement, (post_id,))
+                writer = cursor.fetchone()[0]
+                return writer
+
+
+
+        def get_post_content(self, post_id):
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                statement = """SELECT CONTENT FROM BLOG WHERE (ID = (%s))"""
+                cursor.execute(statement, (post_id,))
+                content = cursor.fetchone()
+                return content
+
+
+        def get_all_posts(self):
+            with dbapi2.connect(app.config['dsn']) as connection:
+                cursor = connection.cursor()
+                query = """SELECT ID, TITLE, CONTENT, PUBLISH_DATE, WRITER, LIKE_COUNT FROM BLOG
+                           ORDER BY ID DESC"""
+                cursor.execute(query)
+                all_posts = [(id, Post(title, content, publish_date, writer, like_count))
+                            for id, title, content, publish_date, writer, like_count in cursor]
+
+                connection.commit()
+                cursor.close()
+            return all_posts
+
+
