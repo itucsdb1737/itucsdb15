@@ -1,6 +1,78 @@
 Parts Implemented by Batuhan Islek
 ================================
 
+HANDLERS
+########
+
+Sign Up User
+***********
+
+Sign up operation is done in the handlers.py. It is written to add new users to the platform. WTForms package is used to maintain signup form.
+
+
+* SIGN UP FORM
+
+It has username, password, email, confirm password, accept terms fields and submit button. All fields has validators to check whether the conditions are followed.
+It checks the length of the input and checks if there is an input or not.
+
+.. code-block:: python
+
+    class SignupForm(Form):
+    username = StringField('Username', [validators.Length(min=4, max=20)])
+    password = PasswordField('Password', [validators.DataRequired(),
+                                          validators.EqualTo('confirm', message="Passwords must match.")])
+    email = StringField('E-mail', [validators.Length(min=4, max=20)])
+    confirm = PasswordField('Repeat Password')
+    accept_tos = BooleanField('I accept the Terms of Service and the Privacy Notice.', [validators.DataRequired()])
+    submit = SubmitField('Sign Up')
+
+
+
+* /SIGN UP
+
+Sign up functions takes the input parameters from the SignupForm and checks if there is a user with the taken information. If there is, it flashes a message as "Invalid credentials",
+if not it adds the user to the userlist and updates the activity feed with "New user has been joined".
+
+.. code-block:: python
+
+    @site.route('/signup', methods=['GET','POST'])
+    def register():
+        try:
+            form = SignupForm(request.form)
+            if request.method == 'POST' and form.validate():
+                username = form.username.data
+                email = form.email.data
+                password = str(form.password.data)
+                with dbapi2.connect(app.config['dsn']) as connection:
+                    cursor = connection.cursor()
+                    query = """SELECT COUNT(*) FROM USERS WHERE (USERNAME=(%s))"""
+                    cursor.execute(query, (username,))
+                    num = cursor.fetchone()[0]
+                    connection.commit()
+                    num = int(num)
+                if num > 0:
+                    message = 'The username is already taken, please choose another'
+                    return render_template('signup.html', form=form, message=message )
+                else:
+                    new_user = User(str(form.username.data), str(form.password.data), str(form.email.data))
+                    app.userlist.add_user(new_user.username, new_user.password,new_user.email)
+                    app.activitylist.add_activity(new_user.username,
+                                                  "New user has been joined",
+                                                  formatDate())
+                    flash("Thanks for joining our site.")
+                    app.userlist.update_join_date(new_user.username, formatDate())
+                    return redirect(url_for('site.login'))
+            else:
+                return render_template('signup.html', form=form)
+
+        except Exception as e:
+            return (str(e))
+
+
+
+
+Login User
+***********
 
 
 
@@ -9,8 +81,6 @@ Parts Implemented by Batuhan Islek
 
 
 
-
-**TABLES**
 
 USERS
 ########
@@ -292,8 +362,7 @@ The game class is defined in user.py as follows:
         self.category = category
         self.price = price
 
-* Game class has title, producer, publish_date, content, category and price attributes. Only the like count does not taken as parameter to initalize the game.
-It is give as 0 at start. This is used to modal games to add them into the store.
+* Game class has title, producer, publish_date, content, category and price attributes. Only the like count does not taken as parameter to initalize the game.It is given as 0 at start. This is used to modal games to add them into the store.
 
 
 
@@ -335,5 +404,5 @@ The store class is defined in store.py as follows:
                 cursor.close()
             return all_games
 
-*Store class has 3 functions that is used for ADDING and SHOWING the game informations in the game store. So it has only adding and getting functions for the games.
+* Store class has 3 functions that is used for ADDING and SHOWING the game informations in the game store. So it has only adding and getting functions for the games.
 The database operations of the games are done in this class.
