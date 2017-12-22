@@ -190,6 +190,7 @@ It renders to the store page if the game is added and adds activity to the activ
 
 
 
+
 Library Page
 ***********
 
@@ -218,6 +219,7 @@ When the user buys a game, it sends the game_id to he /library. Then the title a
             content = app.store.get_game_content(title)
             app.library.add_game(title,"",formatDate(),content,"",price, username)
             return redirect(url_for('site.store_page'))
+
 
 
 Profile Page
@@ -291,6 +293,118 @@ When user deletes profile, it deletes it from the user list, closes and clears t
         session.clear()
         flash('You deleted your account.')
         return redirect(url_for('site.home_page'))
+
+
+
+
+
+Blog Page
+***********
+
+* /BLOG
+
+Blog page show all the post that has been added. It directs the edit, delete and +1 buttons for edit, delete and like operations.
+
+.. code-block:: python
+
+    @site.route('/blog', methods=['GET', 'POST'])
+    def blog_page():
+        if request.method == 'POST':
+            tag = request.form['tag']
+
+            if "clap" in tag:
+                 tag = tag.split(":")
+                 index = tag[1]
+                 app.blog.like_post(index)
+                 all_posts = app.blog.get_all_posts()
+                 return render_template('blog.html', posts=all_posts)
+
+            if "edit"in tag:
+                tag = tag.split(":")
+                index = tag[1]
+                content = app.blog.get_post_content(index)
+                title = str(app.blog.get_post_title(index))
+                writer = app.blog.get_writer(index)
+                if writer == session['username']:
+                    return render_template('edit_post.html', content=content, title=title, num=index)
+                else:
+                    message = "Only author can edit the post !"
+                    all_posts = app.blog.get_all_posts()
+                    return render_template('blog.html',message=message, posts=all_posts)
+
+            if "delete" in tag:
+                tag = tag.split(":")
+                index = tag[1]
+                writer = app.blog.get_writer(index)
+                post_title = str(app.blog.get_post_title(index))
+                if writer == session['username']:
+                    app.blog.delete_post(index)
+                    all_posts = app.blog.get_all_posts()
+                    app.activitylist.add_activity(session['username'],
+                                                  "Post has been deleted : " + post_title,
+                                                  formatDate())
+                    return render_template('blog.html', posts=all_posts)
+                else:
+                    message = "Only author can delete the post !"
+                    all_posts = app.blog.get_all_posts()
+                    return render_template('blog.html',message=message, posts=all_posts)
+
+
+            else:
+                all_posts = app.blog.get_all_posts()
+                return render_template('blog.html', posts=all_posts)
+
+        if request.method == 'GET':
+            all_posts = app.blog.get_all_posts()
+            return render_template('blog.html', posts=all_posts)
+
+
+
+* /BLOG/ADD POST
+
+It adds the post to the blog with the title and content informations.Then it updates the activity feed. User should fill all the areas to add a post.
+
+.. code-block:: python
+
+    @site.route('/blog/add_post', methods=['GET','POST'])
+    def add_post():
+        if request.method == 'GET':
+            return render_template('add_post.html')
+        if request.method == 'POST':
+            post_title = request.form['post_title']
+            post_content = request.form['post_content']
+            if post_title == "" or post_content == "":
+                message = 'Fill all the areas !'
+                return render_template('add_post.html', message=message)
+            else:
+                app.blog.add_post(post_title, post_content, formatDate(), session['username'], 0)
+                app.activitylist.add_activity(session['username'],
+                                              "New post has been added to the Blog : " + post_title,
+                                              formatDate())
+                return redirect(url_for('site.blog_page'))
+
+
+* /BLOG/EDIT POST
+
+After clicking the edit button, it returns a form to edit the fields of the post. Then returns all posts to the blog.html page.
+
+.. code-block:: python
+
+    @site.route('/blog/edit_post', methods=['GET', 'POST'])
+    def edit_page():
+         if request.method == 'GET':
+           return render_template('edit_post.html')
+
+         if request.method == 'POST':
+           index = int(request.form['tag'])
+           new_title = request.form['post_title']
+           old_title = app.blog.get_post_title(index)
+           new_content = request.form['post_content']
+           app.blog.update_post(new_title, new_content, index)
+           all_posts = app.blog.get_all_posts()
+           app.activitylist.add_activity(session['username'], "Post has been edited : "+ old_title , formatDate())
+           return render_template('blog.html', posts = all_posts)
+
 
 
 
@@ -618,3 +732,13 @@ The store class is defined in store.py as follows:
 
 * Store class has 3 functions that is used for ADDING and SHOWING the game informations in the game store. So it has only adding and getting functions for the games.
 The database operations of the games are done in this class.
+
+
+BLOG
+########
+Blog Table Initialization
+***********
+
+
+Post Class Definition
+***********
