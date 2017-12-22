@@ -141,6 +141,10 @@ Log out the user with a flash message and redirects it to the home page. Flash m
         flash('You were just logged out.')
         return redirect(url_for('site.home_page'))
 
+
+Store Page
+***********
+
 * /STORE
 
 Store page shows all the games in a card format with the game informations. So it returns all games to the store.html
@@ -185,6 +189,108 @@ It renders to the store page if the game is added and adds activity to the activ
                 return redirect(url_for('site.store_page'))
 
 
+
+Library Page
+***********
+
+* LIBRARY
+
+It shows the current users purchase history. It gets the session username and gets all the games where the buyer of the game is the current user. It returns all selected games to the library page.
+When the user buys a game, it sends the game_id to he /library. Then the title and the price of the game is get with parsing the returning value. Then game is added to the library automatically.
+
+
+.. code-block:: python
+
+    @site.route('/library', methods=['GET', 'POST'])
+    @login_required
+    def library_page():
+        if request.method == 'GET':
+            buyer = session['username']
+            library_games_all = app.library.get_all_games(buyer)
+            return render_template('library.html', username=session['username'], games=library_games_all)
+
+        if request.method == 'POST':
+            tag = request.form['buy_now']
+            tag = tag.split(":")
+            title = tag[1]
+            price = tag[3]
+            username = session['username']
+            content = app.store.get_game_content(title)
+            app.library.add_game(title,"",formatDate(),content,"",price, username)
+            return redirect(url_for('site.store_page'))
+
+
+Profile Page
+***********
+
+* PROFILE
+
+Profile page gets the current user's informations with getter functions with giving username paramater. Then it sends all the results which are username, email, name_surname, date, gender,
+address, phone_number and join_date to the profile.html page.
+
+.. code-block:: python
+
+    @site.route('/profile')
+    @login_required
+    def profile_page():
+        username = session['username']
+        email = app.userlist.get_email(username)
+        name_surname = app.userlist.get_name(username)
+        date = app.userlist.get_birth_date(username)
+        gender = app.userlist.get_gender(username)
+        address = app.userlist.get_address(username)
+        phone_number = app.userlist.get_phone(username)
+        join_date = app.userlist.get_join_date(username)
+        return render_template('profile.html', username=username, email=email, name=name_surname,
+                               date=date, gender=gender, address=address, phone_number=phone_number, join_date=join_date)
+
+* EDIT PROFILE
+
+The edit profile button leads to this function. It shows the edit_profile.html page, It gets name, gender, address and phone number informations from the form and updates the
+user properties accordingly after saving the changes.
+
+.. code-block:: python
+
+    @site.route('/profile/edit_profile', methods=['GET','POST'])
+    def edit_profile():
+        username = session['username']
+        if request.method == 'GET':
+            return render_template('edit_profile.html')
+        if request.method == 'POST':
+            name = request.form['user_name']
+            date = request.form['birth_date']
+            gender = request.form['gender']
+            address = request.form['address']
+            phone_number = request.form['phone']
+            if name:
+                app.userlist.update_name(username, name)
+            if date:
+                app.userlist.update_birth_date(username, date)
+            if gender:
+                app.userlist.update_gender(username, gender)
+            if address:
+                app.userlist.update_address(username, address)
+            if phone_number:
+                app.userlist.update_phone(username, phone_number)
+            else:
+                return redirect(url_for('site.profile_page'))
+
+            return redirect(url_for('site.profile_page'))
+
+* DELETE PROFILE (ACCOUNT)
+
+When user deletes profile, it deletes it from the user list, closes and clears the session. Then sends message to the home page as **'You deleted your account.'**.
+
+.. code-block:: python
+
+    @site.route('/profile/delete_profile')
+    def delete_profile():
+        username = session['username']
+        app.userlist.delete_user(username)
+        session['logged_in']=False
+        session.clear()
+        flash('You deleted your account.')
+        return redirect(url_for('site.home_page'))
 
 
 
